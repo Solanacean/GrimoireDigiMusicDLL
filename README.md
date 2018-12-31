@@ -1,9 +1,9 @@
-## GrimoireDigiMusicDLL
+﻿## GrimoireDigiMusicDLL
 GrimoireDigiMusicDLL is a wrapper which adds support for digital music (MP3) to Grimoire: Heralds of the Winged Exemplar. 
 It is compatible with both Grimoire V1 and V2. 
 
 ### Building from source code
-To build the wrapper from source code you need Microsoft Visual Studio Community 2017. The following libraries are another requirement:
+To build the wrapper from source code you need Microsoft Visual Studio Community 2017 and the following libraries:
 
 [Microsoft Detours Express 3.0](https://www.microsoft.com/en-us/download/details.aspx?id=52586)  
 [BASS audio library 2.4](http://www.un4seen.com/bass.html)
