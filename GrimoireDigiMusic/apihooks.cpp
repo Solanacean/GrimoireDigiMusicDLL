@@ -28,11 +28,11 @@ static HWND (WINAPI * CreateWindowExA_real)(DWORD dwExStyle, LPCSTR lpClassName,
 HRESULT WINAPI CoCreateInstance_mine(__in REFCLSID rclsid, __in LPUNKNOWN pUnkOuter, __in DWORD dwClsContext,
     __in REFIID riid, __out LPVOID *ppv)
 {
-    if ((rclsid == CLSID_DirectMusicPerformance) && (riid == IID_IDirectMusicPerformance))
+    if (rclsid == CLSID_DirectMusicPerformance && riid == IID_IDirectMusicPerformance)
     {
         *ppv = new myDMPerformance;
     }
-    else if ((rclsid == CLSID_DirectMusicLoader) && (riid == IID_IDirectMusicLoader))
+    else if (rclsid == CLSID_DirectMusicLoader && riid == IID_IDirectMusicLoader)
     {
         *ppv = new myDMLoader;
     }
