@@ -133,7 +133,7 @@ HRESULT __stdcall myDMPerformance::SetGlobalParam(REFGUID rguidType, void* pPara
     {
         char buf[36 + 1];
 
-        sprintf_s(buf, sizeof(buf), "%08lx-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx",
+        sprintf_s(buf, "%08lx-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx",
             rguidType.Data1, rguidType.Data2, rguidType.Data3,
             rguidType.Data4[0], rguidType.Data4[1], rguidType.Data4[2], rguidType.Data4[3],
             rguidType.Data4[4], rguidType.Data4[5], rguidType.Data4[6], rguidType.Data4[7]);
