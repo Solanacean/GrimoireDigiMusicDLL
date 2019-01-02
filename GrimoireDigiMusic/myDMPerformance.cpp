@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "file.h"
 #include <bass.h>
+#include <stdio.h>
 
 /*
 CDXMidi::Shutdown  (Release, CloseDown)
@@ -127,6 +128,20 @@ HRESULT __stdcall myDMPerformance::AddPort(IDirectMusicPort* pPort)
 HRESULT __stdcall myDMPerformance::SetGlobalParam(REFGUID rguidType, void* pParam, DWORD dwSize)
 {
     LOGFUNCTIONCALL;
+
+    if (rguidType != GUID_PerfMasterVolume)
+    {
+        char buf[36 + 1];
+
+        sprintf_s(buf, sizeof(buf), "%08lx-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx",
+            rguidType.Data1, rguidType.Data2, rguidType.Data3,
+            rguidType.Data4[0], rguidType.Data4[1], rguidType.Data4[2], rguidType.Data4[3],
+            rguidType.Data4[4], rguidType.Data4[5], rguidType.Data4[6], rguidType.Data4[7]);
+
+        LOG_CRITICAL("Unexpected GUID: ", buf);
+
+        return ~S_OK;
+    }
 
     // BASS stream global volume level range is from 0 (silent) to 10000 (full)
 
