@@ -1,5 +1,5 @@
-﻿## GrimoireDigiMusicDLL
-GrimoireDigiMusicDLL is a wrapper which adds support for digital music (MP3) to Grimoire: Heralds of the Winged Exemplar. 
+﻿## GrimoireDigiMusic
+GrimoireDigiMusic is a wrapper which adds support for digital music (MP3) to Grimoire: Heralds of the Winged Exemplar. 
 It is compatible with both Grimoire V1 and V2. 
 
 ### Building from source code
