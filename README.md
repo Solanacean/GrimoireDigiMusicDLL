@@ -17,7 +17,6 @@ in a subfolder named `Music` which must contain all the required files (see deta
 The game's folder should look like this (note the `Music` folder and its content and the files `bass.dll` and `dsound.dll`):<br>
 
 <pre>
-|-- 001.SVG
 |-- BUNDLE-Z.RSF
 |-- Grimoire.exe
 |-- Music 
@@ -71,9 +70,7 @@ The game's folder should look like this (note the `Music` folder and its content
 |           `-- vcredist_x86.exe
 |-- bass.dll
 |-- dsound.dll
-|-- fast.qst
-|-- game.cfg
-`-- grimoire.log
+`-- fast.qst
 </pre>
 
 Each time the game is launched (provided you installed the wrapper correctly) a `DIGIMUSIC_LOG.txt` file will be created 
