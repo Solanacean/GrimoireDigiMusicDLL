@@ -71,14 +71,6 @@ HRESULT __stdcall myDMPerformance::Init(IDirectMusic **ppDirectMusic, LPDIRECTSO
         return ~S_OK;
     }
 
-    // Increase BASS playback buffer length to reduce the chance of sound breaking up on slow computers
- 
-    if (!BASS_SetConfig(BASS_CONFIG_BUFFER, 1000))
-    {
-        LOG_ERROR("Unable to set playback buffer length, BASS_SetConfig failed with error code: ", BASS_ErrorGetCode());
-        return ~S_OK;
-    }
-
     return S_OK;
 }
 
