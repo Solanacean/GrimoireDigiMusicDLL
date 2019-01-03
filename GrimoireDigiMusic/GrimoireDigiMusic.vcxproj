@@ -71,7 +71,7 @@
     <LibraryPath>C:\VSProjects\Detours\lib.X86;C:\Users\anna\Downloads\bass24\c;C:\Users\anna\Downloads\DXSDK\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\VSProjects\Detours\include;C:\Users\anna\Downloads\bass24\c;$(IncludePath);C:\Users\anna\Downloads\DXSDK\Include</IncludePath>
     <LibraryPath>C:\VSProjects\Detours\lib.X86;C:\Users\anna\Downloads\bass24\c;C:\Users\anna\Downloads\DXSDK\Lib\x86;$(LibraryPath)</LibraryPath>
     <TargetName>dsound</TargetName>
