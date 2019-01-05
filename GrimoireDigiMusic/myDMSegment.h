@@ -1,14 +1,19 @@
 #pragma once
 
+#include <Windows.h>
+
 #include <dmusici.h>
 #include <bass.h>
+#include <atomic>
 
 class myDMSegment : public IDirectMusicSegment
 {
 
 public:
     HSTREAM m_hStream;
-    myDMSegment(HSTREAM hStream) : m_hStream(hStream) {};
+    std::atomic_bool m_isPlaying;
+
+    myDMSegment(HSTREAM hStream) : m_hStream(hStream) {}
 
 private:
     // IUnknown methods

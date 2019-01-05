@@ -8,6 +8,7 @@
 #include "file.h"
 #include <bass.h>
 #include <stdio.h>
+#include <atomic>
 
 /*
 CDXMidi::Shutdown  (Release, CloseDown)
@@ -17,6 +18,11 @@ CDXMidi::Stop      (Stop)
 CDXMidi::IsPlaying (IsPlaying)
 CDXMidi::SetVolume (SetGlobalParam)
 */
+
+void CALLBACK MySyncProc(HSYNC handle, DWORD channel, DWORD data, myDMSegment *pSeg)
+{
+    pSeg->m_isPlaying.store(false, std::memory_order_relaxed);
+}
 
 /************************************************************************************************************
  * ULONG __stdcall myDMPerformance::Release
@@ -80,11 +86,25 @@ HRESULT __stdcall myDMPerformance::PlaySegment(IDirectMusicSegment *pSegment, DW
 {
     LOGFUNCTIONCALL;
 
-    if (!BASS_ChannelPlay(dynamic_cast<myDMSegment*>(pSegment)->m_hStream, TRUE))
+    auto *pSeg = static_cast<myDMSegment*>(pSegment);
+
+    if (!BASS_ChannelSetSync(pSeg->m_hStream, BASS_SYNC_END | BASS_SYNC_ONETIME, 0, (SYNCPROC *)MySyncProc, pSeg))
+    {
+        LOG_ERROR("BASS_ChannelSetSync failed with error code: ", BASS_ErrorGetCode());
+        return ~S_OK;
+    }
+
+    if (!BASS_ChannelPlay(pSeg->m_hStream, TRUE))
     {
         LOG_ERROR("BASS_ChannelPlay failed with error code: ", BASS_ErrorGetCode());
         return ~S_OK;
     }
+
+    DWORD channelState = BASS_ChannelIsActive(pSeg->m_hStream);
+    pSeg->m_isPlaying.store((channelState == BASS_ACTIVE_PLAYING || channelState == BASS_ACTIVE_STALLED), 
+                             std::memory_order_relaxed);
+
+    //pMySegment->m_isPlaying.store(true, std::memory_order_relaxed);
 
     return S_OK;
 }
@@ -95,9 +115,15 @@ HRESULT __stdcall myDMPerformance::Stop(IDirectMusicSegment *pSegment, IDirectMu
 {
     LOGFUNCTIONCALL;
 
-    if (!BASS_ChannelStop(dynamic_cast<myDMSegment*>(pSegment)->m_hStream))
+    auto *pSeg = static_cast<myDMSegment*>(pSegment);
+
+    if (!BASS_ChannelStop(pSeg->m_hStream))
     {
         LOG_ERROR("BASS_ChannelStop failed with error code: ", BASS_ErrorGetCode());
+    }
+    else
+    {
+        pSeg->m_isPlaying.store(false, std::memory_order_relaxed);
     }
 
     return S_OK;
@@ -107,11 +133,9 @@ HRESULT __stdcall myDMPerformance::Stop(IDirectMusicSegment *pSegment, IDirectMu
 
 HRESULT __stdcall myDMPerformance::IsPlaying(IDirectMusicSegment* pSegment, IDirectMusicSegmentState* pSegState)
 {
-//#ifdef DEBUGLOG_ISPLAYING
-//    LOGFUNCTIONCALL
-//#endif
-
-    return (BASS_ChannelIsActive(dynamic_cast<myDMSegment*>(pSegment)->m_hStream) == BASS_ACTIVE_PLAYING) ? S_OK : S_FALSE;
+    auto *pSeg = static_cast<myDMSegment*>(pSegment);
+ 
+    return pSeg->m_isPlaying.load(std::memory_order_relaxed) ? S_OK : S_FALSE;
 }
 
 // CDXMidi::Init
@@ -147,13 +171,15 @@ HRESULT __stdcall myDMPerformance::SetGlobalParam(REFGUID rguidType, void* pPara
 
     DWORD streamVol;
 
-    if (*(int*)pParam <= -10000)
+    int32_t perfMasterVol = *static_cast<int*>(pParam);
+
+    if (perfMasterVol <= -10000)
     {
         streamVol = 0;
     }
     else
     { 
-        streamVol = (DWORD)((double)(3000.0 - abs(*(int*)pParam)) * (10000.0 / 3000.0));
+        streamVol = (DWORD)((double)(3000.0 - abs(perfMasterVol)) * (10000.0 / 3000.0));
     }
 
     if (!BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, streamVol))
