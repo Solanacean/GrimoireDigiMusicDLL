@@ -171,7 +171,7 @@ HRESULT __stdcall myDMPerformance::SetGlobalParam(REFGUID rguidType, void* pPara
 
     DWORD streamVol;
 
-    int32_t perfMasterVol = *static_cast<int*>(pParam);
+    auto perfMasterVol = *static_cast<int32_t*>(pParam);
 
     if (perfMasterVol <= -10000)
     {
