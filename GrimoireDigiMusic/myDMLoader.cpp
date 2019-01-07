@@ -34,7 +34,7 @@ HRESULT __stdcall myDMLoader::GetObject(LPDMUS_OBJECTDESC pDesc, REFIID riid, LP
         
         //LOG_DEBUG("Creating stream from: ", path_mp3);
 
-        hStream = BASS_StreamCreateFile(FALSE, path_mp3.c_str(), 0, 0, BASS_SAMPLE_FLOAT | BASS_ASYNCFILE);
+        hStream = BASS_StreamCreateFile(FALSE, path_mp3.c_str(), 0, 0, BASS_SAMPLE_FLOAT | BASS_SAMPLE_SOFTWARE | BASS_ASYNCFILE);
         if (!hStream)
         {          
             LOG_ERROR("BASS_StreamCreateFile failed to create stream from: ", path_mp3, ". Error code: ", BASS_ErrorGetCode());
