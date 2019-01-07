@@ -10,6 +10,31 @@
 #include <stdio.h>
 #include <atomic>
 
+#define GRIMVOL_TO_DMUSVOL(volume) (-30 * (100 - volume))
+
+#define BASS_STREAM_VOLUME_MIN 0
+#define BASS_STREAM_VOLUME_MAX 10000
+#define GRIM_VOLUME_MIN 0
+#define GRIM_VOLUME_MAX 100
+#define GRIM_DMUS_VOLUME_NONCOMP_MIN GRIMVOL_TO_DMUSVOL(GRIM_VOLUME_MIN)
+#define GRIM_DMUS_VOLUME_MAX GRIMVOL_TO_DMUSVOL(GRIM_VOLUME_MAX)
+
+inline double ConvertRange(double value, double oldStart, double oldEnd, double newStart, double newEnd)
+{
+    double oldRangeLength = oldEnd - oldStart;
+    if (!oldRangeLength)
+    {
+        return newStart;
+    }
+    double scale = (newEnd - newStart) / oldRangeLength;
+    return (newStart + ((value - oldStart) * scale));
+}
+
+void CALLBACK MySyncProc(HSYNC handle, DWORD channel, DWORD data, myDMSegment *pSeg)
+{
+    pSeg->m_isPlaying.store(false, std::memory_order_relaxed);
+}
+
 /*
 CDXMidi::Shutdown  (Release, CloseDown)
 CDXMidi::Init      (Init, AddPort)
@@ -18,11 +43,6 @@ CDXMidi::Stop      (Stop)
 CDXMidi::IsPlaying (IsPlaying)
 CDXMidi::SetVolume (SetGlobalParam)
 */
-
-void CALLBACK MySyncProc(HSYNC handle, DWORD channel, DWORD data, myDMSegment *pSeg)
-{
-    pSeg->m_isPlaying.store(false, std::memory_order_relaxed);
-}
 
 /************************************************************************************************************
  * ULONG __stdcall myDMPerformance::Release
@@ -167,20 +187,15 @@ HRESULT __stdcall myDMPerformance::SetGlobalParam(REFGUID rguidType, void* pPara
         return ~S_OK;
     }
 
-    // BASS stream global volume level range is from 0 (silent) to 10000 (full)
-
-    DWORD streamVol;
-
     auto perfMasterVol = *static_cast<int32_t*>(pParam);
 
-    if (perfMasterVol <= -10000)
+    if (perfMasterVol < GRIM_DMUS_VOLUME_NONCOMP_MIN)
     {
-        streamVol = 0;
+        perfMasterVol = GRIM_DMUS_VOLUME_NONCOMP_MIN;
     }
-    else
-    { 
-        streamVol = (DWORD)((double)(3000.0 - abs(perfMasterVol)) * (10000.0 / 3000.0));
-    }
+
+    DWORD streamVol = (DWORD)ConvertRange(perfMasterVol, 
+        GRIM_DMUS_VOLUME_NONCOMP_MIN, GRIM_DMUS_VOLUME_MAX, BASS_STREAM_VOLUME_MIN, BASS_STREAM_VOLUME_MAX);
 
     if (!BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, streamVol))
     {
@@ -398,3 +413,4 @@ HRESULT __stdcall myDMPerformance::RhythmToTime(WORD wMeasure, BYTE bBeat, BYTE 
 {
     UNEXPECTEDMETHODCALL;
 }
+
