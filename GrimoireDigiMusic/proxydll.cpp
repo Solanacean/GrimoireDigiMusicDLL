@@ -1,9 +1,6 @@
 #include <Windows.h>
-
 #include "proxydll.h"
-
 #include <tchar.h>
-
 //#include "logger.h"
 
 struct exportRec_t
@@ -27,7 +24,7 @@ static exportRec_t exportRecDsound[] = {
     {NULL, "DirectSoundCaptureCreate8"}
 };
 
-static HMODULE hmodDsound = 0;
+static HMODULE hmodDsound = NULL;
 
 FARPROC __stdcall ResolveExport(size_t index);
 
@@ -50,7 +47,9 @@ bool FreeRealDsound()
     bool result = false;
 
     if (!hmodDsound)
+    {
         return result;
+    }
 
     if (FreeLibrary(hmodDsound))
     {

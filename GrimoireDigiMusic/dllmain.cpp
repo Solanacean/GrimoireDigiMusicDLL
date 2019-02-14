@@ -4,7 +4,6 @@
 
 #include <Windows.h>
 
-#include <tchar.h>
 #include <detours.h>
 #include "proxydll.h"
 #include "apihooks.h"
