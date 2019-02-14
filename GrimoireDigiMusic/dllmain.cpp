@@ -25,7 +25,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
             DWORD dwAttrib = GetFileAttributes(szPath);
             if (dwAttrib == INVALID_FILE_ATTRIBUTES || dwAttrib & FILE_ATTRIBUTE_DIRECTORY)
             {
-                LOG_CRITICAL("System dsound.dll is missing. If you're using WINE, install the native dsound.dll using Winetricks and configure WINE to use the installed version instead of the built-in one.");
+                LOG_FATAL("System dsound.dll is missing. If you're using WINE, install the native dsound.dll using Winetricks and configure WINE to use the installed version instead of the built-in one.");
                 return FALSE;
             }
         }
