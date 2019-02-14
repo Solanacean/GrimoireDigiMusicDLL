@@ -19,6 +19,8 @@ Download archive file containing the latest binaries from the repository's [rele
 Copy `dsound.dll` and `bass.dll` to the game's installation folder. The wrapper will look for the tracks in MP3 format
 in a subfolder named `Music` which must contain all the required files (see details below).
 
+**Note for WINE users:** native system dsound.dll is required -- use Winetricks to install it, then configure WINE to use the installed version instead of the built-in one.
+
 The game's folder should look like this (note the `Music` folder and its content and the files `bass.dll` and `dsound.dll`):<br>
 
 <pre>
