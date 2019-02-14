@@ -10,6 +10,7 @@
 
 #define LOG(lineLevel, ...) Logger::Instance().Log(lineLevel, __FUNCTION__, __VA_ARGS__)
 
+#define LOG_FATAL(...) LOG(Logger::Level::fatal, __VA_ARGS__)
 #define LOG_CRITICAL(...) LOG(Logger::Level::critical, __VA_ARGS__)
 #define LOG_ERROR(...) LOG(Logger::Level::error, __VA_ARGS__)
 #define LOG_WARNING(...) LOG(Logger::Level::warning, __VA_ARGS__)
@@ -17,10 +18,10 @@
 #define LOG_DEBUG(...) LOG(Logger::Level::debug, __VA_ARGS__)
 #define LOG_VERBOSE(...) LOG(Logger::Level::verbose, __VA_ARGS__)
 
+#define LOGF(...) LOG_FATAL(__VA_ARGS__)
 #define LOGC(...) LOG_CRITICAL(__VA_ARGS__)
 #define LOGE(...) LOG_ERROR(__VA_ARGS__)
 #define LOGW(...) LOG_WARNING(__VA_ARGS__)
-#define LOGI(...) LOG_INFO(__VA_ARGS__)
 #define LOGD(...) LOG_DEBUG(__VA_ARGS__)
 #define LOGV(...) LOG_VERBOSE(__VA_ARGS__)
 
@@ -41,11 +42,10 @@ class Logger
 public:
     enum class Level
     {
-        info,
+        fatal,
         critical,
         error,
         warning,
-        //info,
         debug,
         verbose
     };
@@ -130,6 +130,9 @@ private:
     {
         switch (lineLevel)
         {
+        case Level::fatal:
+            return "FTL";
+
         case Level::critical:
             return "CRT";
 
@@ -139,17 +142,12 @@ private:
         case Level::warning:
             return "WRN";
 
-        case Level::info:
-            return "INF";
-
         case Level::debug:
             return "DBG";
 
         case Level::verbose:
-            return "VRB";
-
         default:
-            return "???";
+            return "VRB";
         }
     }
 
