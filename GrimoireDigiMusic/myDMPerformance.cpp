@@ -32,7 +32,7 @@ inline double ConvertRange(double value, double oldStart, double oldEnd, double 
 
 void CALLBACK MySyncProc(HSYNC handle, DWORD channel, DWORD data, myDMSegment *pSeg)
 {
-    pSeg->m_isPlaying.store(false, std::memory_order_relaxed);
+    pSeg->m_isPlaying.store(S_FALSE, std::memory_order_relaxed);
 }
 
 /*
@@ -114,17 +114,15 @@ HRESULT __stdcall myDMPerformance::PlaySegment(IDirectMusicSegment *pSegment, DW
         return ~S_OK;
     }
 
+    pSeg->m_isPlaying.store(S_OK, std::memory_order_relaxed);
+
     if (!BASS_ChannelPlay(pSeg->m_hStream, TRUE))
     {
+        pSeg->m_isPlaying.store(S_FALSE, std::memory_order_relaxed);
+
         LOG_ERROR("BASS_ChannelPlay failed with error code: ", BASS_ErrorGetCode());
         return ~S_OK;
     }
-
-    DWORD channelState = BASS_ChannelIsActive(pSeg->m_hStream);
-    pSeg->m_isPlaying.store((channelState == BASS_ACTIVE_PLAYING || channelState == BASS_ACTIVE_STALLED), 
-                             std::memory_order_relaxed);
-
-    //pMySegment->m_isPlaying.store(true, std::memory_order_relaxed);
 
     return S_OK;
 }
@@ -143,7 +141,7 @@ HRESULT __stdcall myDMPerformance::Stop(IDirectMusicSegment *pSegment, IDirectMu
     }
     else
     {
-        pSeg->m_isPlaying.store(false, std::memory_order_relaxed);
+        pSeg->m_isPlaying.store(S_FALSE, std::memory_order_relaxed);
     }
 
     return S_OK;
@@ -155,7 +153,7 @@ HRESULT __stdcall myDMPerformance::IsPlaying(IDirectMusicSegment* pSegment, IDir
 {
     auto *pSeg = static_cast<myDMSegment*>(pSegment);
  
-    return pSeg->m_isPlaying.load(std::memory_order_relaxed) ? S_OK : S_FALSE;
+    return pSeg->m_isPlaying.load(std::memory_order_relaxed);
 }
 
 // CDXMidi::Init

@@ -11,7 +11,7 @@ class myDMSegment : public IDirectMusicSegment
 
 public:
     HSTREAM m_hStream;
-    std::atomic_bool m_isPlaying {false};
+    std::atomic<HRESULT> m_isPlaying {S_FALSE};
 
     myDMSegment(HSTREAM hStream) : m_hStream(hStream) {}
 
